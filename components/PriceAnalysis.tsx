@@ -13,7 +13,6 @@ import {
 } from 'recharts';
 import { analyzeOutliersAndDistribution, groupSimilarProducts } from '../utils/priceAnalysis';
 
-// ここから新しい型定義を追加
 interface PriceQuartiles {
   q1: number;
   median: number;
@@ -41,7 +40,6 @@ interface PriceAnalysisProps {
   brandNote: string;
 }
 
-// ここから既存のコードを修正
 const PriceAnalysis: React.FC<PriceAnalysisProps> = ({ 
   categoryData = {
     priceQuartiles: { q1: 0, median: 0, q3: 0 },
@@ -53,12 +51,7 @@ const PriceAnalysis: React.FC<PriceAnalysisProps> = ({
     speedPriceData: []
   }, 
   brandNote = '' 
-}) => 
-
-  const q1 = categoryData.priceQuartiles?.q1 ?? 0;
-  const median = categoryData.priceQuartiles?.median ?? 0;
-  const q3 = categoryData.priceQuartiles?.q3 ?? 0;
-  
+}) => {
   const {
     minPrice = 0,
     maxPrice = 0,
@@ -67,6 +60,10 @@ const PriceAnalysis: React.FC<PriceAnalysisProps> = ({
     listingCount = 0,
     speedPriceData = []
   } = categoryData;
+
+  const q1 = categoryData.priceQuartiles?.q1 ?? 0;
+  const median = categoryData.priceQuartiles?.median ?? 0;
+  const q3 = categoryData.priceQuartiles?.q3 ?? 0;
 
   // 価格分析を実行
   const priceAnalysis = useMemo(() => {
