@@ -298,8 +298,13 @@ const similarGroups = useMemo(() => {
   );
 };
 
-// Helper function - 変更なし
-const getReliabilityMessage = (totalItems) => {
+interface ReliabilityMessage {
+  message: string;
+  bgColor: string;
+  textColor: string;
+}
+
+const getReliabilityMessage = (totalItems: number): ReliabilityMessage | null => {
   if (totalItems < 10) {
     return {
       message: 'データ数が少ないため参考値',
