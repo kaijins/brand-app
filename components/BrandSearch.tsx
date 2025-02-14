@@ -23,7 +23,7 @@ const BrandSearch = () => {
   }, []);
 
 // サジェスト検索時は基本情報のみ取得
-const handleInputChange = useCallback(async (e) => {
+const handleInputChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
   const value = e.target.value;
   setSearchQuery(value);
   
@@ -120,7 +120,7 @@ const handleBrandSelect = useCallback(async (brand) => {
       <div className="max-w-md mx-auto pt-16 px-4">
         <h1 className="text-2xl font-bold mb-8 text-center">メルカリ価格検索</h1>
         
-        <div className="relative" onClick={e => e.stopPropagation()}>
+        <div className="relative" onClick={(e: React.MouseEvent<HTMLButtonElement>) => {}}>
           <Search className="absolute left-3 top-2.5 text-gray-400" size={20} />
           <input
             ref={inputRef}
