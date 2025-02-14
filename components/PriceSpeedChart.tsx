@@ -46,7 +46,7 @@ const PriceSpeedChart: React.FC<PriceSpeedChartProps> = ({
     avgPrice = 0
   } = categoryData;
 
-  const filterSeasonalData = (data) => {
+  const filterSeasonalData = (data: SpeedPriceData[]): SeasonalResult => {
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
     const prevMonth = (currentMonth - 1 + 12) % 12;
@@ -90,11 +90,11 @@ const PriceSpeedChart: React.FC<PriceSpeedChartProps> = ({
     }));
 
     // 季節性フィルタの適用
-    const seasonalResult = showSeasonal ? filterSeasonalData(validData) : { 
-      filteredData: validData, 
-      seasonRange: null, 
-      excludedCount: 0 
-    };
+    interface SeasonalResult {
+  filteredData: SpeedPriceData[];
+  seasonRange: string;
+  excludedCount: number;
+}
 
     // 外れ値の計算
     const dataToProcess = seasonalResult.filteredData;
