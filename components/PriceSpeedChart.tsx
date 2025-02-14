@@ -102,6 +102,8 @@ const PriceSpeedChart: React.FC<PriceSpeedChartProps> = ({
       originalDays: item.soldDays
     }));
 
+    const seasonalResult = filterSeasonalData(speedPriceData); // ⬅ ここを追加
+
     // 外れ値の計算
     const dataToProcess = seasonalResult.filteredData;
     const prices = dataToProcess.map(item => item.originalPrice);
