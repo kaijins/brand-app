@@ -46,6 +46,13 @@ const PriceSpeedChart: React.FC<PriceSpeedChartProps> = ({
     avgPrice = 0
   } = categoryData;
 
+   // 季節性フィルタの適用
+   interface SeasonalResult {
+    filteredData: SpeedPriceData[];
+    seasonRange: string;
+    excludedCount: number;
+  }
+
 // TODO: 今後の開発で使う予定（例: フィルタ機能追加時）
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const filterSeasonalData = (data: SpeedPriceData[]): SeasonalResult => {
@@ -91,13 +98,6 @@ const PriceSpeedChart: React.FC<PriceSpeedChartProps> = ({
       originalPrice: item.price,
       originalDays: item.soldDays
     }));
-
-    // 季節性フィルタの適用
-    interface SeasonalResult {
-  filteredData: SpeedPriceData[];
-  seasonRange: string;
-  excludedCount: number;
-}
 
     // 外れ値の計算
     const dataToProcess = seasonalResult.filteredData;
