@@ -1,11 +1,6 @@
 {
-    "name": "ブランド分析アプリ",
-    "short_name": "ブランド分析",
-    "description": "ブランドを分析するアプリ",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#f9fafb",
-    "theme_color": "#3b82f6",
+    "name": "Brand Analytics App",
+    "short_name": "BrandApp",
     "icons": [
       {
         "src": "/icon-192x192.png",
@@ -17,5 +12,10 @@
         "sizes": "512x512",
         "type": "image/png"
       }
-    ]
+    ],
+    "theme_color": "#1F2937",
+    "background_color": "#111827",
+    "start_url": "/",
+    "display": "standalone",
+    "orientation": "portrait"
   }
