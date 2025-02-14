@@ -46,6 +46,8 @@ const PriceSpeedChart: React.FC<PriceSpeedChartProps> = ({
     avgPrice = 0
   } = categoryData;
 
+// TODO: 今後の開発で使う予定（例: フィルタ機能追加時）
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
   const filterSeasonalData = (data: SpeedPriceData[]): SeasonalResult => {
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
@@ -75,6 +77,7 @@ const PriceSpeedChart: React.FC<PriceSpeedChartProps> = ({
   const analyzed = useMemo(() => {
     const MAX_DAYS_DISPLAY = 60;
     
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const validData = speedPriceData.filter(item => 
       item && 
       typeof item.price === 'number' && 
