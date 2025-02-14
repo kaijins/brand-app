@@ -136,7 +136,7 @@ const PriceSpeedChart: React.FC<PriceSpeedChartProps> = ({
       yAxisDomain: [yMin, yMax],
       effectiveAvgPrice: effectiveAvg
     };
-  }, [speedPriceData, excludeOutliers, showSeasonal, avgPrice]);
+  }, [speedPriceData, excludeOutliers, avgPrice]);
 
   return (
     <div className="bg-gray-800 rounded-lg shadow-lg p-6">
