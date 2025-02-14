@@ -5,7 +5,7 @@ import { Search } from 'lucide-react';
 import SearchResults from './SearchResults';
 import { searchBrandsBasic, getBrandAnalytics, getAllBrands } from '../utils/api';
 
-// 型定義を追加
+// 型定義
 interface Brand {
   code: string;
   brandName_ja: string;
@@ -13,9 +13,41 @@ interface Brand {
   note?: string;
 }
 
+interface SpeedPriceData {
+  price: number;
+  soldDays: number;
+  productName: string;
+  condition: string;
+  image: string;
+  listedDate?: string;
+  soldDate?: string;
+}
+
+interface CategoryData {
+  category: string;
+  soldCount: number;
+  listingCount: number;
+  minPrice: number;
+  maxPrice: number;
+  avgPrice: number;
+  avgSoldDays: number;
+  priceQuartiles: {
+    q1: number;
+    median: number;
+    q3: number;
+  };
+  speedPriceData: SpeedPriceData[];
+  productNames: string;
+}
+
+interface AnalyticsData extends Brand {
+  categories: CategoryData[];
+}
+
+// コンポーネント内の state 定義を修正
 const BrandSearch = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<any>(null);
+  const [searchResults, setSearchResults] = useState<AnalyticsData[] | null>(null);
   const [suggestions, setSuggestions] = useState<Brand[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -156,7 +188,7 @@ const BrandSearch = () => {
         {isLoading ? (
           <div className="mt-4 text-center text-gray-400">読み込み中...</div>
         ) : (
-          searchResults && searchResults.map((result: any, index: number) => (
+          searchResults && searchResults.map((result, index) => (
             <SearchResults key={index} brandData={result} />
           ))
         )}
