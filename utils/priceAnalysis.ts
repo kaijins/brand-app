@@ -28,8 +28,19 @@ export const analyzeOutliersAndDistribution = (prices: number[]) => {
     };
   };
 
-// 商品名の類似性を判定する関数
-export const groupSimilarProducts = (products) => {
+  interface Product {
+    productName: string;
+    price: number;
+  }
+  
+  interface SimilarGroup {
+    baseName: string;
+    products: Product[];
+    totalCount: number;
+    avgPrice: number;
+  }
+  
+  export const groupSimilarProducts = (products: Product[]): SimilarGroup[] => {
     const groups = [];
     const processedIndices = new Set();
   

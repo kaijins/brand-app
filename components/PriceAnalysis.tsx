@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';  // useMemoを追加
+import React, { useMemo } from 'react';
 import {
   BarChart,
   Bar,
@@ -13,7 +13,47 @@ import {
 } from 'recharts';
 import { analyzeOutliersAndDistribution, groupSimilarProducts } from '../utils/priceAnalysis';
 
-const PriceAnalysis = ({ categoryData = {}, brandNote = '' }) => {
+// ここから新しい型定義を追加
+interface PriceQuartiles {
+  q1: number;
+  median: number;
+  q3: number;
+}
+
+interface CategoryData {
+  priceQuartiles: PriceQuartiles;
+  minPrice: number;
+  maxPrice: number;
+  avgPrice: number;
+  soldCount: number;
+  listingCount: number;
+  speedPriceData: Array<{
+    price: number;
+    productName: string;
+    soldDays: number;
+    condition: string;
+    image: string;
+  }>;
+}
+
+interface PriceAnalysisProps {
+  categoryData: CategoryData;
+  brandNote: string;
+}
+
+// ここから既存のコードを修正
+const PriceAnalysis: React.FC<PriceAnalysisProps> = ({ 
+  categoryData = {
+    priceQuartiles: { q1: 0, median: 0, q3: 0 },
+    minPrice: 0,
+    maxPrice: 0,
+    avgPrice: 0,
+    soldCount: 0,
+    listingCount: 0,
+    speedPriceData: []
+  }, 
+  brandNote = '' 
+}) => {
   const {
     priceQuartiles = {},
     minPrice = 0,

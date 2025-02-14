@@ -4,7 +4,30 @@ import React from 'react';
 import { TrendingUp, AlertCircle, ChevronRight } from 'lucide-react';
 import _ from 'lodash';
 
-const ValueAssessment = ({ 
+// 型定義を追加
+interface SpeedPriceData {
+  price: number;
+  productName: string;
+  soldDays?: number;
+  condition?: string;
+  image?: string;
+}
+
+interface CategoryData {
+  category: string;
+  soldCount: number;
+  speedPriceData?: SpeedPriceData[];
+}
+
+interface ValueAssessmentProps {
+  categoryData: CategoryData;
+  allCategories: CategoryData[];
+  selectedCategory: string;
+  onCategorySelect: (category: string) => void;
+}
+
+// コンポーネントの定義を修正
+const ValueAssessment: React.FC<ValueAssessmentProps> = ({ 
   categoryData, 
   allCategories = [], 
   selectedCategory,

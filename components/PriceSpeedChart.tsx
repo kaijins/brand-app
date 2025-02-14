@@ -7,7 +7,37 @@ import {
 } from 'recharts';
 import { Filter, CalendarRange } from 'lucide-react';
 
-const PriceSpeedChart = ({ categoryData = {} }) => {
+// 型定義を追加
+interface SpeedPriceData {
+  price: number;
+  soldDays: number;
+  productName: string;
+  displayDays?: number;
+  displayPrice?: number;
+  originalPrice?: number;
+  originalDays?: number;
+  listedDate?: string;
+  soldDate?: string;
+  condition?: string;
+  image?: string;
+}
+
+interface CategoryData {
+  speedPriceData: SpeedPriceData[];
+  avgPrice: number;
+}
+
+interface PriceSpeedChartProps {
+  categoryData: CategoryData;
+}
+
+// コンポーネントの定義を修正
+const PriceSpeedChart: React.FC<PriceSpeedChartProps> = ({ 
+  categoryData = {
+    speedPriceData: [],
+    avgPrice: 0
+  }
+}) => {
   const [excludeOutliers, setExcludeOutliers] = useState(false);
   const [showSeasonal, setShowSeasonal] = useState(false);
 

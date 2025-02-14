@@ -1,13 +1,53 @@
 'use client';
 
-import { useState, useMemo } from 'react';  // useMemoを追加
+import { useState, useMemo } from 'react';
 import { TrendingUp, TrendingDown, Clock, Search } from 'lucide-react';
 import PriceAnalysis from './PriceAnalysis';
 import PriceSpeedChart from './PriceSpeedChart';
 import ValueAssessment from './ValueAssessment';
 
-// SearchResultsコンポーネント
-const SearchResults = ({ brandData }) => {
+// 型定義を追加
+interface SpeedPriceData {
+  price: number;
+  soldDays: number;
+  productName: string;
+  condition: string;
+  image: string;
+  listedDate?: string;
+  soldDate?: string;
+}
+
+interface CategoryData {
+  category: string;
+  soldCount: number;
+  listingCount: number;
+  minPrice: number;
+  maxPrice: number;
+  avgPrice: number;
+  avgSoldDays: number;
+  speedPriceData: SpeedPriceData[];
+  productNames?: string;
+  priceQuartiles: {
+    q1: number;
+    median: number;
+    q3: number;
+  };
+}
+
+interface BrandData {
+  brandName_ja: string;
+  brandName_en: string;
+  code: string;
+  note?: string;
+  categories: CategoryData[];
+}
+
+interface SearchResultsProps {
+  brandData: BrandData;
+}
+
+// コンポーネントの定義を修正
+const SearchResults: React.FC<SearchResultsProps> = ({ brandData }) => {
   const [selectedCategory, setSelectedCategory] = useState(
     brandData.categories?.[0]?.category || ''
   );
