@@ -53,9 +53,13 @@ const PriceAnalysis: React.FC<PriceAnalysisProps> = ({
     speedPriceData: []
   }, 
   brandNote = '' 
-}) => {
+}) => 
+
+  const q1 = categoryData.priceQuartiles?.q1 ?? 0;
+  const median = categoryData.priceQuartiles?.median ?? 0;
+  const q3 = categoryData.priceQuartiles?.q3 ?? 0;
+  
   const {
-    priceQuartiles = {},
     minPrice = 0,
     maxPrice = 0,
     avgPrice = 0,
@@ -63,10 +67,6 @@ const PriceAnalysis: React.FC<PriceAnalysisProps> = ({
     listingCount = 0,
     speedPriceData = []
   } = categoryData;
-
-  const q1 = priceQuartiles?.q1 ?? 0;
-  const median = priceQuartiles?.median ?? 0;
-  const q3 = priceQuartiles?.q3 ?? 0;
 
   // 価格分析を実行
   const priceAnalysis = useMemo(() => {
