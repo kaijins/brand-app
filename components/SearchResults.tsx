@@ -5,7 +5,6 @@ import { TrendingUp, TrendingDown, Clock, Search } from 'lucide-react';
 import PriceAnalysis from './PriceAnalysis';
 import PriceSpeedChart from './PriceSpeedChart';
 import ValueAssessment from './ValueAssessment';
-import { performanceMonitor } from '../utils/api';  // performanceMonitorをインポート
 
 // SearchResultsコンポーネント
 const SearchResults = ({ brandData }) => {

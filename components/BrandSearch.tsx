@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import SearchResults from './SearchResults';
-import { searchBrandsBasic, getBrandAnalytics, getAllBrands, clearAnalyticsCache  } from '../utils/api';
+import { searchBrandsBasic, getBrandAnalytics, getAllBrands } from '../utils/api';
 
 const BrandSearch = () => {
   const [searchQuery, setSearchQuery] = useState('');

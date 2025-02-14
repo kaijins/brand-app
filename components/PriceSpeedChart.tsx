@@ -13,8 +13,7 @@ const PriceSpeedChart = ({ categoryData = {} }) => {
 
   const {
     speedPriceData = [],
-    avgPrice = 0,
-    avgSoldDays = 0
+    avgPrice = 0
   } = categoryData;
 
   const filterSeasonalData = (data) => {
