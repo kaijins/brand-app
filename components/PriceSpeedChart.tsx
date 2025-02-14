@@ -69,7 +69,10 @@ const PriceSpeedChart: React.FC<PriceSpeedChartProps> = ({
 
     const seasonalData = data.filter(item => {
       if (!item.soldDate && !item.listedDate) return false;
-      const itemDate = new Date(item.soldDate || item.listedDate);
+      const rawDate = item.soldDate ?? item.listedDate ?? null;
+      if (!rawDate) return false; // `null` の場合はフィルターで弾く
+      const itemDate = new Date(rawDate);
+      //const itemDate = new Date(item.soldDate || item.listedDate);
       const itemMonth = itemDate.getMonth();
       return [prevMonth, currentMonth, nextMonth].includes(itemMonth);
     });
