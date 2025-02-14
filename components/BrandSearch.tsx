@@ -5,102 +5,103 @@ import { Search } from 'lucide-react';
 import SearchResults from './SearchResults';
 import { searchBrandsBasic, getBrandAnalytics, getAllBrands } from '../utils/api';
 
+// 型定義を追加
+interface Brand {
+  code: string;
+  brandName_ja: string;
+  brandName_en: string;
+  note?: string;
+}
+
 const BrandSearch = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState(null);
-  const [suggestions, setSuggestions] = useState([]);
+  const [searchResults, setSearchResults] = useState<any>(null);
+  const [suggestions, setSuggestions] = useState<Brand[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const initializeBrands = async () => {
-      const result = await getAllBrands();  // testGetAllBrands の代わりに直接 getAllBrands を使用
+      const result = await getAllBrands();
       console.log('Initial brands loaded:', result);
     };
     initializeBrands();
   }, []);
 
-// サジェスト検索時は基本情報のみ取得
-const handleInputChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-  const value = e.target.value;
-  setSearchQuery(value);
-  
-  if (!value.trim() || isLoading || isSearching) {
-    setSuggestions([]);
-    setShowSuggestions(false);
-    return;
-  }
-
-  try {
-    const results = await searchBrandsBasic(value);
-    console.log('Got results:', results);
-
-    if (!isSearching) {
-      const normalizedInput = value.toLowerCase().trim();
-      
-      // シンプルなグループ化ロジック
-      const groupedResults = {
-        exact: results.filter(brand => 
-          brand.brandName_ja.toLowerCase() === normalizedInput ||
-          brand.brandName_en.toLowerCase() === normalizedInput ||
-          brand.code.toLowerCase() === normalizedInput
-        ),
-        partial: results.filter(brand => {
-          const isExact = brand.brandName_ja.toLowerCase() === normalizedInput ||
-                         brand.brandName_en.toLowerCase() === normalizedInput ||
-                         brand.code.toLowerCase() === normalizedInput;
-          return !isExact && (
-            brand.brandName_ja.toLowerCase().includes(normalizedInput) ||
-            brand.brandName_en.toLowerCase().includes(normalizedInput) ||
-            brand.code.toLowerCase().includes(normalizedInput)
-          );
-        })
-      };
-
-      setSuggestions([...groupedResults.exact, ...groupedResults.partial]);
-      setShowSuggestions(true);
-      console.log('Set grouped suggestions:', {
-        exact: groupedResults.exact.length,
-        partial: groupedResults.partial.length
-      });
-    }
-  } catch (error) {
-    console.error('Search error:', error);
-    setSuggestions([]);
-    setShowSuggestions(false);
-  }
-}, [isLoading, isSearching]);
-
-// handleBrandSelect も修正
-const handleBrandSelect = useCallback(async (brand) => {
-  setIsLoading(true);
-  setIsSearching(true);
-  setSearchQuery(brand.brandName_ja);
-  setShowSuggestions(false);
-  setSuggestions([]);
-
-  if (inputRef.current) {
-    inputRef.current.blur();
-  }
-
-  try {
-    console.log('Requesting analytics for brand:', brand.brandName_ja);
-    const analyticsData = await getBrandAnalytics(brand.brandName_ja);  // codeからbrandName_jaに変更
+  const handleInputChange = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setSearchQuery(value);
     
-    setSearchResults([{
-      ...brand,
-      ...analyticsData
-    }]);
-  } catch (error) {
-    console.error('検索エラー:', error);
-    setSearchResults(null);
-  } finally {
-    setIsLoading(false);
-    setIsSearching(false);
-  }
-}, []);
+    if (!value.trim() || isLoading || isSearching) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    try {
+      const results = await searchBrandsBasic(value);
+      console.log('Got results:', results);
+
+      if (!isSearching) {
+        const normalizedInput = value.toLowerCase().trim();
+        
+        const groupedResults = {
+          exact: results.filter((brand: Brand) => 
+            brand.brandName_ja.toLowerCase() === normalizedInput ||
+            brand.brandName_en.toLowerCase() === normalizedInput ||
+            brand.code.toLowerCase() === normalizedInput
+          ),
+          partial: results.filter((brand: Brand) => {
+            const isExact = brand.brandName_ja.toLowerCase() === normalizedInput ||
+                           brand.brandName_en.toLowerCase() === normalizedInput ||
+                           brand.code.toLowerCase() === normalizedInput;
+            return !isExact && (
+              brand.brandName_ja.toLowerCase().includes(normalizedInput) ||
+              brand.brandName_en.toLowerCase().includes(normalizedInput) ||
+              brand.code.toLowerCase().includes(normalizedInput)
+            );
+          })
+        };
+
+        setSuggestions([...groupedResults.exact, ...groupedResults.partial]);
+        setShowSuggestions(true);
+      }
+    } catch (error) {
+      console.error('Search error:', error);
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  }, [isLoading, isSearching]);
+
+  const handleBrandSelect = useCallback(async (brand: Brand) => {
+    setIsLoading(true);
+    setIsSearching(true);
+    setSearchQuery(brand.brandName_ja);
+    setShowSuggestions(false);
+    setSuggestions([]);
+
+    if (inputRef.current) {
+      inputRef.current.blur();
+    }
+
+    try {
+      console.log('Requesting analytics for brand:', brand.brandName_ja);
+      const analyticsData = await getBrandAnalytics(brand.brandName_ja);
+      
+      setSearchResults([{
+        ...brand,
+        ...analyticsData
+      }]);
+    } catch (error) {
+      console.error('検索エラー:', error);
+      setSearchResults(null);
+    } finally {
+      setIsLoading(false);
+      setIsSearching(false);
+    }
+  }, []);
 
   const handleClickOutside = useCallback(() => {
     if (showSuggestions) {
@@ -109,7 +110,6 @@ const handleBrandSelect = useCallback(async (brand) => {
   }, [showSuggestions]);
 
   const handleFocus = useCallback(() => {
-    // 検索中やロード中はサジェストを表示しない
     if (!isSearching && !isLoading && suggestions.length > 0) {
       setShowSuggestions(true);
     }
@@ -120,7 +120,7 @@ const handleBrandSelect = useCallback(async (brand) => {
       <div className="max-w-md mx-auto pt-16 px-4">
         <h1 className="text-2xl font-bold mb-8 text-center">メルカリ価格検索</h1>
         
-        <div className="relative" onClick={(e: React.MouseEvent<HTMLButtonElement>) => {}}>
+        <div className="relative">
           <Search className="absolute left-3 top-2.5 text-gray-400" size={20} />
           <input
             ref={inputRef}
@@ -156,7 +156,7 @@ const handleBrandSelect = useCallback(async (brand) => {
         {isLoading ? (
           <div className="mt-4 text-center text-gray-400">読み込み中...</div>
         ) : (
-          searchResults && searchResults.map((result, index) => (
+          searchResults && searchResults.map((result: any, index: number) => (
             <SearchResults key={index} brandData={result} />
           ))
         )}
