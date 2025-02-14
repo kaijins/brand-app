@@ -9,6 +9,10 @@ const withPWA = require('next-pwa')({
 const nextConfig = {
   pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
   reactStrictMode: true,
+  // 以下を追加
+  experimental: {
+    appDir: true
+  }
 };
 
 module.exports = withPWA(nextConfig);
