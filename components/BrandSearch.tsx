@@ -22,40 +22,6 @@ const BrandSearch = () => {
     initializeBrands();
   }, []);
 
-  const handleSearch = useCallback(async (value) => {
-    if (!value || isSearching) {
-      setSuggestions([]);
-      setShowSuggestions(false);
-      return;
-    }
-  
-    try {
-      const results = await searchBrandsBasic(value);
-      // 検索中でなければ結果を表示
-      if (!isSearching) {
-        const groupedResults = results.reduce((groups, brand) => {
-          const exactMatch = brand.brandName_ja.toLowerCase() === value.toLowerCase() || 
-                           brand.brandName_en.toLowerCase() === value.toLowerCase();
-          const partialMatch = brand.brandName_ja.toLowerCase().includes(value.toLowerCase()) ||
-                             brand.brandName_en.toLowerCase().includes(value.toLowerCase());
-          
-          if (exactMatch) {
-            groups.exact.push(brand);
-          } else if (partialMatch) {
-            groups.partial.push(brand);
-          }
-          return groups;
-        }, { exact: [], partial: [] });
-  
-        setSuggestions([...groupedResults.exact, ...groupedResults.partial]);
-        setShowSuggestions(true);
-      }
-    } catch (error) {
-      console.error('検索エラー:', error);
-      setSuggestions([]);
-    }
-  }, [isSearching]);
-
 // サジェスト検索時は基本情報のみ取得
 const handleInputChange = useCallback(async (e) => {
   const value = e.target.value;
