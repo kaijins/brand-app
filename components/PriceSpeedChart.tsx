@@ -3,11 +3,9 @@
 import React, { useMemo, useState } from 'react';
 import {
   ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, 
-  Tooltip, ResponsiveContainer, ReferenceLine,
-  TooltipProps
+  Tooltip, ResponsiveContainer, ReferenceLine
 } from 'recharts';
 import { Filter, CalendarRange } from 'lucide-react';
-import { ValueType, NameType } from 'recharts/types/component/DefaultTooltipContent';
 
 interface SpeedPriceData {
   price: number;
@@ -33,6 +31,13 @@ interface CategoryData {
   speedPriceData: SpeedPriceData[];
   avgPrice: number;
 }
+
+interface TooltipPayload {
+    payload: {
+      originalPrice: number;
+      originalDays: number;
+    };
+  }
 
 const PriceSpeedChart: React.FC<{ categoryData: CategoryData }> = ({ 
   categoryData = {
@@ -158,7 +163,7 @@ const PriceSpeedChart: React.FC<{ categoryData: CategoryData }> = ({
       yAxisDomain: [yMin, yMax],
       effectiveAvgPrice: effectiveAvg
     };
-  }, [speedPriceData, excludeOutliers, avgPrice]);
+}, [speedPriceData, excludeOutliers, avgPrice, showSeasonal]);
 
   return (
     <div className="bg-gray-800 rounded-lg shadow-lg p-6">
@@ -237,7 +242,7 @@ const PriceSpeedChart: React.FC<{ categoryData: CategoryData }> = ({
                 borderRadius: '4px',
                 padding: '8px'
               }}
-              formatter={(value: number, name: string, props: any) => {
+              formatter={(value: number, name: string, props: TooltipPayload) => {
                 const item = props.payload;
                 if (name === "displayPrice") {
                   return [`¥${item.originalPrice.toLocaleString()}`, '価格'];
