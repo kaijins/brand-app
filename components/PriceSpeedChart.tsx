@@ -2,12 +2,17 @@
 
 import React, { useMemo, useState } from 'react';
 import {
-  ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, 
-  Tooltip, ResponsiveContainer, ReferenceLine
+  ScatterChart, 
+  Scatter, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid,
+  Tooltip, 
+  ResponsiveContainer, 
+  ReferenceLine
 } from 'recharts';
 import { Filter, CalendarRange } from 'lucide-react';
-import { TooltipProps as RechartsTooltipProps } from 'recharts';
-import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
+import { Payload } from 'recharts/types/component/DefaultTooltipContent';
 
 interface SpeedPriceData {
   price: number;
@@ -247,16 +252,16 @@ const PriceSpeedChart: React.FC<{ categoryData: CategoryData }> = ({
                     borderRadius: '4px',
                     padding: '8px'
                 }}
-                formatter={(value: ValueType, name: NameType, entry: any) => {
-                    if (!entry.payload) return ['', ''];
+                formatter={(value: number, name: string, props: Payload<number, string>) => {
+                    if (!props.payload) return ['', ''];
                     if (name === "displayPrice") {
-                    return [`¥${entry.payload.originalPrice.toLocaleString()}`, '価格'];
+                      return [`¥${props.payload.originalPrice.toLocaleString()}`, '価格'];
                     }
                     return [
-                    entry.payload.originalDays > 60 ? '60日以上' : `${entry.payload.originalDays}日`,
-                    '販売日数'
+                      props.payload.originalDays > 60 ? '60日以上' : `${props.payload.originalDays}日`,
+                      '販売日数'
                     ];
-                }}
+                  }}
                 labelFormatter={(label: string) => label || '商品名なし'}
                 />
             <Scatter 
