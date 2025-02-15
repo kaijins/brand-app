@@ -34,8 +34,11 @@ interface CategoryData {
 
 interface TooltipPayload {
     payload: {
+      displayPrice: number;
+      displayDays: number;
       originalPrice: number;
       originalDays: number;
+      productName?: string;
     };
   }
 
@@ -236,24 +239,24 @@ const PriceSpeedChart: React.FC<{ categoryData: CategoryData }> = ({
               stroke="#9CA3AF"
             />
             <Tooltip 
-              contentStyle={{ 
-                backgroundColor: '#1F2937', 
-                border: 'none',
-                borderRadius: '4px',
-                padding: '8px'
-              }}
-              formatter={(value: number, name: string, props: TooltipPayload) => {
-                const item = props.payload;
-                if (name === "displayPrice") {
-                  return [`¥${item.originalPrice.toLocaleString()}`, '価格'];
-                }
-                return [
-                  item.originalDays > 60 ? '60日以上' : `${item.originalDays}日`,
-                  '販売日数'
-                ];
-              }}
-              labelFormatter={(label: string) => label || '商品名なし'}
-            />
+                contentStyle={{ 
+                    backgroundColor: '#1F2937', 
+                    border: 'none',
+                    borderRadius: '4px',
+                    padding: '8px'
+                }}
+                formatter={(value: number, name: string, props: { payload: TooltipPayload }) => {
+                    const item = props.payload.payload;  // Note: payloadが二重になっています
+                    if (name === "displayPrice") {
+                    return [`¥${item.originalPrice.toLocaleString()}`, '価格'];
+                    }
+                    return [
+                    item.originalDays > 60 ? '60日以上' : `${item.originalDays}日`,
+                    '販売日数'
+                    ];
+                }}
+                labelFormatter={(label: string) => label || '商品名なし'}
+                />
             <Scatter 
               data={analyzed.processedData} 
               fill="#60A5FA"
