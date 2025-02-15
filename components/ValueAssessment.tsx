@@ -4,7 +4,7 @@ import React from 'react';
 import { TrendingUp, AlertCircle, ChevronRight } from 'lucide-react';
 import _ from 'lodash';
 
-// 型定義を追加
+// 基本的なデータ型の定義
 interface SpeedPriceData {
   price: number;
   productName: string;
@@ -16,7 +16,18 @@ interface SpeedPriceData {
 interface CategoryData {
   category: string;
   soldCount: number;
+  listingCount: number;
   speedPriceData?: SpeedPriceData[];
+  prices?: number[];
+}
+
+// 価値評価の戻り値の型定義
+interface ValueAssessmentResult {
+  title: string;
+  containerClass: string;
+  icon: JSX.Element;
+  messageClass: string;
+  bgClass: string;
 }
 
 interface ValueAssessmentProps {
@@ -26,7 +37,6 @@ interface ValueAssessmentProps {
   onCategorySelect: (category: string) => void;
 }
 
-// コンポーネントの定義を修正
 const ValueAssessment: React.FC<ValueAssessmentProps> = ({ 
   categoryData, 
   allCategories = [], 
@@ -34,7 +44,7 @@ const ValueAssessment: React.FC<ValueAssessmentProps> = ({
   onCategorySelect 
 }) => {
   // 価値評価の判定
-  const getValueAssessment = (price) => {
+  const getValueAssessment = (price: number): ValueAssessmentResult => {
     if (price >= 5000) {
       return {
         title: '高額が狙えるブランドです',
@@ -71,7 +81,7 @@ const ValueAssessment: React.FC<ValueAssessmentProps> = ({
   };
 
   // 外れ値を除外した平均価格を計算
-  const calculateAdjustedAverage = (prices) => {
+  const calculateAdjustedAverage = (prices: number[]): number => {
     if (!prices.length) return 0;
     
     const sorted = [...prices].sort((a, b) => a - b);
@@ -90,7 +100,7 @@ const ValueAssessment: React.FC<ValueAssessmentProps> = ({
       : _.mean(prices);
   };
 
-  const renderMainAssessment = (data) => {
+  const renderMainAssessment = (data: CategoryData) => {
     const prices = data.speedPriceData?.map(item => item.price) || [];
     const adjustedAvgPrice = calculateAdjustedAverage(prices);
     const assessment = getValueAssessment(adjustedAvgPrice);
@@ -130,10 +140,10 @@ const ValueAssessment: React.FC<ValueAssessmentProps> = ({
     );
   };
 
-  const renderCategoryCard = (catData) => {
+  const renderCategoryCard = (catData: CategoryData) => {
     const prices = catData.speedPriceData?.map(item => item.price) || [];
     if (prices.length === 0) return null;
-  
+
     const adjustedAvgPrice = calculateAdjustedAverage(prices);
     const assessment = getValueAssessment(adjustedAvgPrice);
   
