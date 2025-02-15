@@ -6,6 +6,8 @@ import {
   Tooltip, ResponsiveContainer, ReferenceLine
 } from 'recharts';
 import { Filter, CalendarRange } from 'lucide-react';
+import { TooltipProps as RechartsTooltipProps } from 'recharts';
+import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
 
 interface SpeedPriceData {
   price: number;
@@ -32,7 +34,7 @@ interface CategoryData {
   avgPrice: number;
 }
 
-interface TooltipPayload {
+interface CustomTooltipPayload extends RechartsTooltipProps<ValueType, NameType> {
     payload: {
       displayPrice: number;
       displayDays: number;
@@ -245,13 +247,13 @@ const PriceSpeedChart: React.FC<{ categoryData: CategoryData }> = ({
                     borderRadius: '4px',
                     padding: '8px'
                 }}
-                formatter={(value: number, name: string, props: { payload: TooltipPayload }) => {
-                    const item = props.payload.payload;  // Note: payloadが二重になっています
+                formatter={(value: ValueType, name: NameType, entry: any) => {
+                    if (!entry.payload) return ['', ''];
                     if (name === "displayPrice") {
-                    return [`¥${item.originalPrice.toLocaleString()}`, '価格'];
+                    return [`¥${entry.payload.originalPrice.toLocaleString()}`, '価格'];
                     }
                     return [
-                    item.originalDays > 60 ? '60日以上' : `${item.originalDays}日`,
+                    entry.payload.originalDays > 60 ? '60日以上' : `${entry.payload.originalDays}日`,
                     '販売日数'
                     ];
                 }}
