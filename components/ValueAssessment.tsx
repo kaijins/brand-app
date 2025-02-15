@@ -201,7 +201,7 @@ const ValueAssessment: React.FC<ValueAssessmentProps> = ({
 
   const validCategories = allCategories.filter(cat => 
     cat.category !== '全カテゴリー' && 
-    cat.speedPriceData?.length > 0
+    (cat.speedPriceData?.length ?? 0) > 0
   );
 
   return (
