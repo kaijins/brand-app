@@ -9,6 +9,12 @@ export const metadata: Metadata = {
     width: 'device-width',
     initialScale: 1,
     maximumScale: 1
+  },
+  themeColor: '#1F2937',
+  appleWebApp: { 
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'BrandApp'
   }
 }
 

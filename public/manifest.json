@@ -1,6 +1,7 @@
 {
     "name": "Brand Analytics App",
     "short_name": "BrandApp",
+    "description": "メルカリ価格分析アプリ", 
     "icons": [
       {
         "src": "/icon-192x192.png",
@@ -17,5 +18,7 @@
     "background_color": "#111827",
     "start_url": "/",
     "display": "standalone",
-    "orientation": "portrait"
+    "orientation": "portrait",
+    "scope": "/", 
+    "prefer_related_applications": false
   }
