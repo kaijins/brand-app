@@ -178,7 +178,7 @@ const MercariSearchLink = ({ brandName }: { brandName: string }) => {
       </div>
 
       {/* 価格分析 */}
-      <PriceAnalysis categoryData={selectedCategoryData} brandNote={brandData.note} />
+      <PriceAnalysis categoryData={selectedCategoryData} brandNote={brandData.note || ''} />
       <PriceSpeedChart categoryData={selectedCategoryData} />
 
       {/* 商品一覧 */}

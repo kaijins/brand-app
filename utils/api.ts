@@ -1,6 +1,6 @@
 'use client';
 
-const API_URL = 'https://script.google.com/macros/s/AKfycbyBWUr7pBVFSX8qFPF10WLbautNdf1XQ0_Afn4kIenWtJeOACEZWJTa1xebEtcKv0UJ/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbyFMiCOFc-SLbsKqrUFbI6mYfT47F0Z3yzOI3lmin5ud7C4UDzxQ4DRHzc2dFD4JlY3/exec';
 
 const CACHE_KEYS = {
   BRANDS: 'brandsCache',
@@ -99,21 +99,19 @@ export const getAllBrands = async () => {
   const monitor = performanceMonitor.start('getAllBrands');
   try {
     const response = await fetch(`${API_URL}?action=search&query=`);
-    const text = await response.text();
+    const text = await response.text();  // 1回だけ呼び出し
+    
+    console.log('API Response:', text);  // ログ出力
+
     const jsonStart = text.indexOf('{');
     const data = JSON.parse(text.substring(jsonStart));
     
     if (data.data) {
-      // キャッシュの保存を確実に
       localStorage.setItem(CACHE_KEYS.BRANDS, JSON.stringify(data.data));
       localStorage.setItem(
         CACHE_KEYS.EXPIRY.BRANDS,
         String(Date.now() + CACHE_DURATION.BRANDS)
       );
-      console.log('Cache updated:', {
-        dataSize: data.data.length,
-        expiry: new Date(Date.now() + CACHE_DURATION.BRANDS)
-      });
     }
     
     monitor.end();
