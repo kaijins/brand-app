@@ -3,11 +3,12 @@
 import React, { useMemo, useState } from 'react';
 import {
   ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, 
-  Tooltip, ResponsiveContainer, ReferenceLine
+  Tooltip, ResponsiveContainer, ReferenceLine,
+  TooltipProps
 } from 'recharts';
 import { Filter, CalendarRange } from 'lucide-react';
+import { ValueType, NameType } from 'recharts/types/component/DefaultTooltipContent';
 
-// 型定義を追加
 interface SpeedPriceData {
   price: number;
   soldDays: number;
@@ -22,17 +23,18 @@ interface SpeedPriceData {
   image?: string;
 }
 
+interface SeasonalResult {
+  filteredData: SpeedPriceData[];
+  seasonRange: string;
+  excludedCount: number;
+}
+
 interface CategoryData {
   speedPriceData: SpeedPriceData[];
   avgPrice: number;
 }
 
-interface PriceSpeedChartProps {
-  categoryData: CategoryData;
-}
-
-// コンポーネントの定義を修正
-const PriceSpeedChart: React.FC<PriceSpeedChartProps> = ({ 
+const PriceSpeedChart: React.FC<{ categoryData: CategoryData }> = ({ 
   categoryData = {
     speedPriceData: [],
     avgPrice: 0
@@ -46,37 +48,28 @@ const PriceSpeedChart: React.FC<PriceSpeedChartProps> = ({
     avgPrice = 0
   } = categoryData;
 
-   // 季節性フィルタの適用
-   interface SeasonalResult {
-    filteredData: SpeedPriceData[];
-    seasonRange: string;
-    excludedCount: number;
-  }
-
-// TODO: 今後の開発で使う予定（例: フィルタ機能追加時）
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
   const filterSeasonalData = (data: SpeedPriceData[]): SeasonalResult => {
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
     const prevMonth = (currentMonth - 1 + 12) % 12;
     const nextMonth = (currentMonth + 1) % 12;
-
+  
     const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', 
                        '7月', '8月', '9月', '10月', '11月', '12月'];
     const seasonRange = [prevMonth, currentMonth, nextMonth]
       .map(m => monthNames[m])
       .join('・');
-
+  
     const seasonalData = data.filter(item => {
-      if (!item.soldDate && !item.listedDate) return false;
-      const rawDate = item.soldDate ?? item.listedDate ?? null;
-      if (!rawDate) return false; // `null` の場合はフィルターで弾く
-      const itemDate = new Date(rawDate);
-      //const itemDate = new Date(item.soldDate || item.listedDate);
+      // 日付が存在しない場合はフィルタから除外
+      const date = item.soldDate || item.listedDate;
+      if (!date) return false;
+      
+      const itemDate = new Date(date);
       const itemMonth = itemDate.getMonth();
       return [prevMonth, currentMonth, nextMonth].includes(itemMonth);
     });
-
+  
     return {
       filteredData: seasonalData,
       seasonRange,
@@ -87,7 +80,6 @@ const PriceSpeedChart: React.FC<PriceSpeedChartProps> = ({
   const analyzed = useMemo(() => {
     const MAX_DAYS_DISPLAY = 60;
     
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const validData = speedPriceData.filter(item => 
       item && 
       typeof item.price === 'number' && 
@@ -102,36 +94,58 @@ const PriceSpeedChart: React.FC<PriceSpeedChartProps> = ({
       originalDays: item.soldDays
     }));
 
-    const seasonalResult = filterSeasonalData(speedPriceData); // ⬅ ここを追加
+    // 季節性フィルタの適用
+    const seasonalResult = showSeasonal ? filterSeasonalData(validData) : { 
+      filteredData: validData, 
+      seasonRange: null, 
+      excludedCount: 0 
+    };
 
     // 外れ値の計算
     const dataToProcess = seasonalResult.filteredData;
-    const prices = dataToProcess.map(item => item.originalPrice);
-    const sorted = [...prices].sort((a, b) => a - b);
-    const q1 = sorted[Math.floor(sorted.length * 0.25)];
-    const q3 = sorted[Math.floor(sorted.length * 0.75)];
+    if (!dataToProcess.length) {
+      return {
+        processedData: [],
+        normalData: [],
+        outlierData: [],
+        outlierCount: 0,
+        seasonRange: seasonalResult.seasonRange,
+        excludedSeasonalCount: seasonalResult.excludedCount,
+        yAxisDomain: [0, 100],
+        effectiveAvgPrice: avgPrice
+      };
+    }
+
+    const prices = dataToProcess.map(item => item.originalPrice ?? 0);
+    const sorted = [...prices].sort((a: number, b: number) => a - b);
+    const q1 = sorted[Math.floor(sorted.length * 0.25)] ?? 0;
+    const q3 = sorted[Math.floor(sorted.length * 0.75)] ?? 0;
     const iqr = q3 - q1;
     const upperBound = q3 + (1.5 * iqr);
     const lowerBound = q1 - (1.5 * iqr);
 
     // データの分類
     const normalData = dataToProcess.filter(
-      item => item.originalPrice >= lowerBound && item.originalPrice <= upperBound
+      item => (item.originalPrice ?? 0) >= lowerBound && (item.originalPrice ?? 0) <= upperBound
     );
     const outlierData = dataToProcess.filter(
-      item => item.originalPrice < lowerBound || item.originalPrice > upperBound
+      item => (item.originalPrice ?? 0) < lowerBound || (item.originalPrice ?? 0) > upperBound
     );
 
     const finalData = excludeOutliers ? normalData : dataToProcess;
 
     // Y軸の範囲を計算
-    const displayPrices = finalData.map(item => item.displayPrice);
-    const yMin = Math.floor(Math.min(...displayPrices) * 0.9);
-    const yMax = Math.ceil(Math.max(...displayPrices) * 1.1);
+    const displayPrices = finalData.map(item => item.displayPrice ?? 0);
+    const yMin = displayPrices.length 
+      ? Math.floor(Math.min(...displayPrices) * 0.9)
+      : 0;
+    const yMax = displayPrices.length 
+      ? Math.ceil(Math.max(...displayPrices) * 1.1)
+      : 100;
 
     // 平均価格を計算
     const effectiveAvg = finalData.length > 0
-      ? finalData.reduce((sum, item) => sum + item.originalPrice, 0) / finalData.length
+      ? finalData.reduce((sum, item) => sum + (item.originalPrice ?? 0), 0) / finalData.length
       : avgPrice;
 
     return {
@@ -223,7 +237,7 @@ const PriceSpeedChart: React.FC<PriceSpeedChartProps> = ({
                 borderRadius: '4px',
                 padding: '8px'
               }}
-              formatter={(value, name, props) => {
+              formatter={(value: number, name: string, props: any) => {
                 const item = props.payload;
                 if (name === "displayPrice") {
                   return [`¥${item.originalPrice.toLocaleString()}`, '価格'];
@@ -233,7 +247,7 @@ const PriceSpeedChart: React.FC<PriceSpeedChartProps> = ({
                   '販売日数'
                 ];
               }}
-              labelFormatter={(value, name, props) => props.payload.productName || '商品名なし'}
+              labelFormatter={(label: string) => label || '商品名なし'}
             />
             <Scatter 
               data={analyzed.processedData} 
