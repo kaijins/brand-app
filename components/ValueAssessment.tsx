@@ -1,17 +1,17 @@
 'use client';
 
-import React from 'react';
+import React, { JSX } from 'react';  // JSXを追加
 import { TrendingUp, AlertCircle, ChevronRight } from 'lucide-react';
 import _ from 'lodash';
 
 // 基本的なデータ型の定義
 interface SpeedPriceData {
-  price: number;
-  productName: string;
-  soldDays?: number;
-  condition?: string;
-  image?: string;
-}
+    price: number;
+    productName: string;
+    soldDays?: number;
+    condition?: string;
+    image?: string;
+  }
 
 interface CategoryData {
   category: string;
