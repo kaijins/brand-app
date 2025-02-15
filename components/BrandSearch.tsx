@@ -6,8 +6,6 @@ import SearchResults from './SearchResults';
 import { searchBrandsBasic, getBrandAnalytics, getAllBrands } from '../utils/api';
 import {
   Brand,
-  SpeedPriceData,
-  CategoryData,
   AnalyticsData
 } from '../types';
 
