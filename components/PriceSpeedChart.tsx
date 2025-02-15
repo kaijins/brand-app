@@ -39,16 +39,6 @@ interface CategoryData {
   avgPrice: number;
 }
 
-interface CustomTooltipPayload extends RechartsTooltipProps<ValueType, NameType> {
-    payload: {
-      displayPrice: number;
-      displayDays: number;
-      originalPrice: number;
-      originalDays: number;
-      productName?: string;
-    };
-  }
-
 const PriceSpeedChart: React.FC<{ categoryData: CategoryData }> = ({ 
   categoryData = {
     speedPriceData: [],
