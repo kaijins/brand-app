@@ -4,45 +4,12 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import SearchResults from './SearchResults';
 import { searchBrandsBasic, getBrandAnalytics, getAllBrands } from '../utils/api';
-
-// 型定義
-interface Brand {
-  code: string;
-  brandName_ja: string;
-  brandName_en: string;
-  note?: string;
-}
-
-interface SpeedPriceData {
-  price: number;
-  soldDays: number;
-  productName: string;
-  condition: string;
-  image: string;
-  listedDate?: string;
-  soldDate?: string;
-}
-
-interface CategoryData {
-  category: string;
-  soldCount: number;
-  listingCount: number;
-  minPrice: number;
-  maxPrice: number;
-  avgPrice: number;
-  avgSoldDays: number;
-  priceQuartiles: {
-    q1: number;
-    median: number;
-    q3: number;
-  };
-  speedPriceData: SpeedPriceData[];
-  productNames: string;
-}
-
-interface AnalyticsData extends Brand {
-  categories: CategoryData[];
-}
+import {
+  Brand,
+  SpeedPriceData,
+  CategoryData,
+  AnalyticsData
+} from '../types';
 
 // コンポーネント内の state 定義を修正
 const BrandSearch = () => {
@@ -82,16 +49,16 @@ const BrandSearch = () => {
         const groupedResults = {
           exact: results.filter((brand: Brand) => 
             brand.brandName_ja.toLowerCase() === normalizedInput ||
-            brand.brandName_en.toLowerCase() === normalizedInput ||
+            brand.brandName_en?.toLowerCase() === normalizedInput ||
             brand.code.toLowerCase() === normalizedInput
           ),
           partial: results.filter((brand: Brand) => {
             const isExact = brand.brandName_ja.toLowerCase() === normalizedInput ||
-                           brand.brandName_en.toLowerCase() === normalizedInput ||
+                           brand.brandName_en?.toLowerCase() === normalizedInput ||
                            brand.code.toLowerCase() === normalizedInput;
             return !isExact && (
               brand.brandName_ja.toLowerCase().includes(normalizedInput) ||
-              brand.brandName_en.toLowerCase().includes(normalizedInput) ||
+              brand.brandName_en?.toLowerCase().includes(normalizedInput) ||
               brand.code.toLowerCase().includes(normalizedInput)
             );
           })
@@ -175,16 +142,18 @@ const BrandSearch = () => {
                   onClick={() => handleBrandSelect(brand)}
                 >
                   <div className="font-medium">{brand.brandName_ja}</div>
-                  <div className="text-sm text-gray-400">
-                    {brand.brandName_en}
-                    <span className="ml-2 text-xs">({brand.code})</span>
-                  </div>
+                  {brand.brandName_en && (
+                    <div className="text-sm text-gray-400">
+                      {brand.brandName_en}
+                      <span className="ml-2 text-xs">({brand.code})</span>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
           )}
         </div>
-
+  
         {isLoading ? (
           <div className="mt-4 text-center text-gray-400">読み込み中...</div>
         ) : (

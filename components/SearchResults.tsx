@@ -5,6 +5,7 @@ import { TrendingUp, TrendingDown, Clock, Search } from 'lucide-react';
 import PriceAnalysis from './PriceAnalysis';
 import PriceSpeedChart from './PriceSpeedChart';
 import ValueAssessment from './ValueAssessment';
+import { AnalyticsData } from '../types';
 
 // 型定義を追加
 interface SpeedPriceData {
@@ -43,7 +44,7 @@ interface BrandData {
 }
 
 interface SearchResultsProps {
-  brandData: BrandData;
+  brandData: AnalyticsData;  // BrandData から AnalyticsData に変更
 }
 
 // コンポーネントの定義を修正

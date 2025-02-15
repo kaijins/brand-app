@@ -1,5 +1,7 @@
 'use client';
 
+import { Brand } from '../types';
+
 const API_URL = 'https://script.google.com/macros/s/AKfycbyFMiCOFc-SLbsKqrUFbI6mYfT47F0Z3yzOI3lmin5ud7C4UDzxQ4DRHzc2dFD4JlY3/exec';
 
 const CACHE_KEYS = {
@@ -163,7 +165,6 @@ export const searchBrandsBasic = async (query: string) => {
   const monitor = performanceMonitor.start(`searchBrandsBasic(${query})`);
   
   try {
-    // キャッシュの取得を確認するデバッグログ
     console.log('Cache status:', {
       cachedData: localStorage.getItem(CACHE_KEYS.BRANDS) ? 'exists' : 'none',
       cacheExpiry: localStorage.getItem(CACHE_KEYS.EXPIRY.BRANDS)
@@ -173,7 +174,7 @@ export const searchBrandsBasic = async (query: string) => {
     const cacheExpiry = localStorage.getItem(CACHE_KEYS.EXPIRY.BRANDS);
     const isValid = cacheExpiry && Date.now() < Number(cacheExpiry);
 
-    let brands = [];
+    let brands: Brand[] = [];  // 型を指定
     if (isValid && cachedData) {
       console.log('Using cached data');
       brands = JSON.parse(cachedData);
@@ -184,22 +185,20 @@ export const searchBrandsBasic = async (query: string) => {
 
     console.log('Brands data:', {
       total: brands.length,
-      sample: brands.slice(0, 3)  // 最初の3件を表示
+      sample: brands.slice(0, 3)
     });
 
-    // 検索処理
     const normalizedQuery = query.toLowerCase().trim();
     if (!normalizedQuery) return [];
 
-    // api.ts の searchBrandsBasic 内の検索ロジックを修正
-    const results = brands.filter(brand => {
+    const results = brands.filter((brand: Brand) => {  // 型を指定
       const brandNameJa = brand.brandName_ja.toLowerCase();
-      const brandNameEn = (brand.brandName_en || '').toLowerCase(); // 空文字列をデフォルトに
+      const brandNameEn = (brand.brandName_en || '').toLowerCase();
       const code = brand.code.toLowerCase();
       
       return (
         brandNameJa.includes(normalizedQuery) ||
-        (brandNameEn && brandNameEn.includes(normalizedQuery)) || // 英語名がある場合のみ検索
+        (brandNameEn && brandNameEn.includes(normalizedQuery)) ||
         code.includes(normalizedQuery)
       );
     });
