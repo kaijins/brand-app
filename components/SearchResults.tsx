@@ -7,44 +7,8 @@ import PriceSpeedChart from './PriceSpeedChart';
 import ValueAssessment from './ValueAssessment';
 import { AnalyticsData } from '../types';
 
-// 型定義を追加
-interface SpeedPriceData {
-  price: number;
-  soldDays: number;
-  productName: string;
-  condition: string;
-  image: string;
-  listedDate?: string;
-  soldDate?: string;
-}
-
-interface CategoryData {
-  category: string;
-  soldCount: number;
-  listingCount: number;
-  minPrice: number;
-  maxPrice: number;
-  avgPrice: number;
-  avgSoldDays: number;
-  speedPriceData: SpeedPriceData[];
-  productNames?: string;
-  priceQuartiles: {
-    q1: number;
-    median: number;
-    q3: number;
-  };
-}
-
-interface BrandData {
-  brandName_ja: string;
-  brandName_en: string;
-  code: string;
-  note?: string;
-  categories: CategoryData[];
-}
-
 interface SearchResultsProps {
-  brandData: AnalyticsData;  // BrandData から AnalyticsData に変更
+  brandData: AnalyticsData;
 }
 
 // コンポーネントの定義を修正
