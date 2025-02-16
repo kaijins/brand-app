@@ -91,9 +91,9 @@ export const groupSimilarProducts = (products: Product[]): SimilarGroup[] => {
   };
   
   // 商品名の類似性を判定するヘルパー関数
-  const areSimilarNames = (name1, name2) => {
+const areSimilarNames = (name1: string, name2: string): boolean => {
     // 空白、記号を除去して小文字に変換
-    const normalize = (str) => 
+    const normalize = (str: string): string =>
       str.toLowerCase().replace(/[\s　\-・]/g, '');
     
     const n1 = normalize(name1);
