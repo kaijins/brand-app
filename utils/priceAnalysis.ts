@@ -1,48 +1,60 @@
 'use client';
 
-export const analyzeOutliersAndDistribution = (prices: number[]) => {
-    // 平均と標準偏差を計算
-    const mean = prices.reduce((sum, price) => sum + price, 0) / prices.length;
-    const stdDev = Math.sqrt(
-      prices.reduce((sum, price) => sum + Math.pow(price - mean, 2), 0) / prices.length
-    );
-  
-    // 外れ値の判定（平均から2標準偏差以上離れているものを外れ値とする）
-    const outliers = prices.filter(price => 
-      Math.abs(price - mean) > 2 * stdDev
-    );
-  
-    // 価格帯の分布（標準偏差を使用）
-    const priceRanges = [
-      { label: '非常に安価', range: [0, mean - stdDev] },
-      { label: '標準的な価格帯', range: [mean - stdDev, mean + stdDev] },
-      { label: '高価格帯', range: [mean + stdDev, mean + 2 * stdDev] },
-      { label: '特別価格帯', range: [mean + 2 * stdDev, Infinity] }
-    ];
-  
-    return {
-      outliers,
-      priceRanges,
-      mean,
-      stdDev
-    };
-  };
+import { SpeedPriceData } from '../types';
 
-  interface Product {
-    productName: string;
-    price: number;
-  }
-  
-  interface SimilarGroup {
-    baseName: string;
-    products: Product[];
-    totalCount: number;
-    avgPrice: number;
-  }
-  
-  export const groupSimilarProducts = (products: Product[]): SimilarGroup[] => {
-    const groups = [];
-    const processedIndices = new Set();
+interface PriceAnalysisResult {
+  outliers: number[];
+  priceRanges: Array<{
+    label: string;
+    range: [number, number];
+  }>;
+  mean: number;
+  stdDev: number;
+}
+
+export const analyzeOutliersAndDistribution = (prices: number[]): PriceAnalysisResult => {
+  // 平均と標準偏差を計算
+  const mean = prices.reduce((sum, price) => sum + price, 0) / prices.length;
+  const stdDev = Math.sqrt(
+    prices.reduce((sum, price) => sum + Math.pow(price - mean, 2), 0) / prices.length
+  );
+
+  // 外れ値の判定（平均から2標準偏差以上離れているものを外れ値とする）
+  const outliers = prices.filter(price =>
+    Math.abs(price - mean) > 2 * stdDev
+  );
+
+  // 価格帯の分布（標準偏差を使用）
+  const priceRanges = [
+    { label: '非常に安価', range: [0, mean - stdDev] as [number, number] },
+    { label: '標準的な価格帯', range: [mean - stdDev, mean + stdDev] as [number, number] },
+    { label: '高価格帯', range: [mean + stdDev, mean + 2 * stdDev] as [number, number] },
+    { label: '特別価格帯', range: [mean + 2 * stdDev, Infinity] as [number, number] }
+  ];
+
+  return {
+    outliers,
+    priceRanges,
+    mean,
+    stdDev
+  };
+};
+
+interface Product {
+  productName: string;
+  price: number;
+}
+
+interface SimilarGroup {
+  baseName: string;
+  products: Product[];
+  totalCount: number;
+  avgPrice: number;
+}
+
+export const groupSimilarProducts = (products: Product[]): SimilarGroup[] => {
+  const groups: SimilarGroup[] = [];
+  const processedIndices = new Set();
   
     products.forEach((product, i) => {
       if (processedIndices.has(i)) return;

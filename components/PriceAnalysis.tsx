@@ -2,38 +2,13 @@
 
 import React, { useMemo } from 'react';
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  ReferenceLine
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, 
+  Tooltip, ResponsiveContainer, ReferenceLine
 } from 'recharts';
 import { analyzeOutliersAndDistribution, groupSimilarProducts } from '../utils/priceAnalysis';
+import { CategoryData } from '../types';  // 共通の型定義からインポート
 
-interface PriceQuartiles {
-  q1: number;
-  median: number;
-  q3: number;
-}
-
-interface CategoryData {
-  priceQuartiles: PriceQuartiles;
-  minPrice: number;
-  maxPrice: number;
-  avgPrice: number;
-  soldCount: number;
-  listingCount: number;
-  speedPriceData: Array<{
-    price: number;
-    productName: string;
-    soldDays: number;
-    condition: string;
-    image: string;
-  }>;
-}
+// PriceQuartilesはCategoryDataの一部なので削除可能
 
 interface PriceAnalysisProps {
   categoryData: CategoryData;
