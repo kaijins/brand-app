@@ -45,7 +45,7 @@ const ValueAssessment: React.FC<ValueAssessmentProps> = ({
 }) => {
   // 価値評価の判定
   const getValueAssessment = (price: number): ValueAssessmentResult => {
-    if (price >= 5000) {
+    if (price >= 6000) {
       return {
         title: '高額が狙えるブランドです',
         containerClass: 'bg-purple-900/30 border-purple-800/50',
@@ -53,7 +53,7 @@ const ValueAssessment: React.FC<ValueAssessmentProps> = ({
         messageClass: 'text-purple-300',
         bgClass: 'bg-purple-900/20'
       };
-    } else if (price >= 3000) {
+    } else if (price >= 4000) {
       return {
         title: '高価になる可能性があります',
         containerClass: 'bg-blue-900/30 border-blue-800/50',
@@ -61,7 +61,7 @@ const ValueAssessment: React.FC<ValueAssessmentProps> = ({
         messageClass: 'text-blue-300',
         bgClass: 'bg-blue-900/20'
       };
-    } else if (price >= 1800) {
+    } else if (price >= 2200) {
       return {
         title: '価値があるブランドです',
         containerClass: 'bg-green-900/30 border-green-800/50',

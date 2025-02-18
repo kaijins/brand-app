@@ -161,6 +161,20 @@ export const getBrandAnalytics = async (brandCode: string) => {
   }
 };
 
+// api.ts に追加
+export async function getMonthlyAnalytics() {
+  try {
+    // Google Apps Scriptのデプロイ済みのWebアプリケーションURLを使用
+    const response = await fetch(`[現在使用しているエンドポイントURL]?action=monthlyAnalytics`);
+    if (!response.ok) throw new Error('API request failed');
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error('Monthly analytics fetch error:', error);
+    return null;
+  }
+}
+
 export const searchBrandsBasic = async (query: string) => {
   const monitor = performanceMonitor.start(`searchBrandsBasic(${query})`);
   
@@ -191,15 +205,17 @@ export const searchBrandsBasic = async (query: string) => {
     const normalizedQuery = query.toLowerCase().trim();
     if (!normalizedQuery) return [];
 
-    const results = brands.filter((brand: Brand) => {  // 型を指定
+    const results = brands.filter((brand: Brand) => {
       const brandNameJa = brand.brandName_ja.toLowerCase();
       const brandNameEn = (brand.brandName_en || '').toLowerCase();
       const code = brand.code.toLowerCase();
+      const parent = (brand.parent || '').toLowerCase();  // 親会社名を追加
       
       return (
         brandNameJa.includes(normalizedQuery) ||
         (brandNameEn && brandNameEn.includes(normalizedQuery)) ||
-        code.includes(normalizedQuery)
+        code.includes(normalizedQuery) ||
+        parent.includes(normalizedQuery)  // 親会社名での検索を追加
       );
     });
 

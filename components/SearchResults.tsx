@@ -58,7 +58,14 @@ const MercariSearchLink = ({ brandName }: { brandName: string }) => {
     {brandData.brandName_ja}
     <span className="text-sm text-gray-400 ml-2">({brandData.code})</span>
   </h3>
-  <p className="text-sm text-gray-400">{brandData.brandName_en}</p>
+  <div className="flex items-center gap-2 mt-1">
+    <p className="text-sm text-gray-400">{brandData.brandName_en}</p>
+    {brandData.parent && (
+      <span className="px-2 py-0.5 text-xs bg-gray-700 text-gray-400 rounded">
+        {brandData.parent}
+      </span>
+    )}
+  </div>
   <MercariSearchLink brandName={brandData.brandName_ja} />
   {brandData.note && brandData.note.length > 0 && (
     <div className="mt-3 p-3 bg-yellow-900/30 rounded-lg">

@@ -1,5 +1,6 @@
 import './globals.css'
 import { Metadata } from 'next'
+import '../utils/devTools'  // 追加
 
 export const metadata: Metadata = {
   title: 'Brand Analytics',

@@ -25,14 +25,51 @@ export interface SpeedPriceData {
     speedPriceData: SpeedPriceData[];
     productNames: string;
   }
+
+  export interface CategoryStats {
+    category: string;
+    count: number;
+    averageRevenue: number;
+    percentage: number;
+    percentageChange?: number;  // オプショナルとして追加
+    avgPrice?: number;         // オプショナルとして追加
+  }
   
   export interface Brand {
     code: string;
     brandName_ja: string;
     brandName_en?: string;  // オプショナルに変更
     note?: string;
+    parent?: string;
+  }
+
+  export interface MonthlyStats {
+    month: number;
+    averagePrice: number;
+    itemCount: number;
+    categories: CategoryStats[];
+  }
+  
+  export interface PriceRangeAnalysis {
+    [key: string]: {
+      count: number;
+      avgDays: number;
+    };
+  }
+  
+  export interface ImageAnalysis {
+    avgPrice: number;
+    avgDays: number;
+    count: number;
   }
   
   export interface AnalyticsData extends Brand {
-    categories: CategoryData[];
+    categories: CategoryData[];  // 既存のプロパティ
+    monthlyStats: MonthlyStats[];
+    priceRangeAnalysis: PriceRangeAnalysis;
+    imageAnalysis: {
+      withImage: ImageAnalysis;
+      withoutImage: ImageAnalysis;
+    };
+    totalDataCount: number;
   }
