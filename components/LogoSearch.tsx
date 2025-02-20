@@ -5,6 +5,7 @@ import { X } from 'lucide-react';  // これを追加
 import { getAllLogos, LogoData } from '../utils/logoDatabase';
 import { compareImages } from '../utils/imageComparison';
 import { getBrandAnalytics } from '../utils/api';
+import { AnalyticsData } from '../types';
 
 interface LogoSearchProps {
     onClose: () => void;
