@@ -153,19 +153,6 @@ const MercariSearchLink = ({ brandName }: { brandName: string }) => {
       <PriceAnalysis categoryData={selectedCategoryData} brandNote={brandData.note || ''} />
       <PriceSpeedChart categoryData={selectedCategoryData} />
 
-      {/* 商品一覧 */}
-      {selectedCategoryData.productNames && (
-        <div className="mt-4">
-          <h4 className="text-gray-400 text-sm mb-2">取扱商品履歴</h4>
-          <div className="bg-gray-700 p-3 rounded max-h-40 overflow-y-auto">
-            {selectedCategoryData.productNames?.split(', ').map((name, index) => (
-              <div key={index} className="text-white py-1">
-                {name}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

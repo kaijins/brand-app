@@ -48,6 +48,7 @@ export interface SpeedPriceData {
     averagePrice: number;
     itemCount: number;
     categories: CategoryStats[];
+    soldTimes?: string[];  // 追加
   }
   
   export interface PriceRangeAnalysis {
@@ -72,4 +73,14 @@ export interface SpeedPriceData {
       withoutImage: ImageAnalysis;
     };
     totalDataCount: number;
+  }
+
+  export interface TimeAnalysisData {
+    dayOfWeek: { [key: string]: number };
+    hourOfDay: { [key: string]: number };
+    heatmap: Array<{
+      day: string;
+      hour: number;
+      count: number;
+    }>;
   }

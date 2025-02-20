@@ -1,8 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import {
+  LineChart, Line,
+  BarChart, Bar,
+  ScatterChart, Scatter,
+  XAxis, YAxis,
+  CartesianGrid,
+  Tooltip, Legend,
+  ResponsiveContainer
+} from 'recharts';
 import { BarChart2, TrendingUp, Image, ChevronDown } from 'lucide-react';
 import { CategoryStats, AnalyticsData, MonthlyStats, PriceRangeAnalysis, ImageAnalysis } from '../types';
-
+import { TimeAnalysisData, HeatmapData, analyzeTimePatterns } from '../utils/timeAnalysis'; 
 
 const MonthlyAnalysis = () => {
   // State hooks
@@ -18,6 +26,7 @@ const MonthlyAnalysis = () => {
         const response = await fetch('/api/monthly-analytics');
         if (!response.ok) throw new Error('API request failed');
         const result = await response.json();
+        console.log('API response:', result); // データ確認
         setData(result);
       } catch (err) {
         setError(err instanceof Error ? err.message : '未知のエラーが発生しました');
@@ -57,6 +66,38 @@ const MonthlyAnalysis = () => {
         label: `${stat.month}月`
       }))
     ];
+  }, [data]);
+
+  const timeAnalysisData = useMemo(() => {
+    if (!data?.monthlyStats) return null;
+    
+    // すべての月のsoldTimesを結合
+    let allTimes: string[] = [];
+    data.monthlyStats.forEach(month => {
+      if (month.soldTimes && Array.isArray(month.soldTimes)) {
+        allTimes = allTimes.concat(month.soldTimes);
+      }
+    });
+    
+    console.log('All times collected:', allTimes.slice(0, 5)); // 最初の5件を表示
+  
+    // 有効な時間データのみをフィルタリング
+    const validTimeData = allTimes.filter(time => 
+      time && typeof time === 'string' && time.includes('T')  // ISO形式のチェック
+    );
+    
+    console.log('Valid time data count:', validTimeData.length);
+    if (validTimeData.length === 0) return null;
+    
+    try {
+      console.log('Analyzing time patterns for data:', validTimeData.slice(0, 5));
+      const result = analyzeTimePatterns(validTimeData);
+      console.log('Time analysis result:', result);
+      return result;
+    } catch (error) {
+      console.error('Time analysis error:', error);
+      return null;
+    }
   }, [data]);
 
   if (loading) {
@@ -286,7 +327,7 @@ const MonthlyAnalysis = () => {
 </div>
 
         {/* 着用画像の影響分析 */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4 mb-6">
           <div className="bg-gray-700 rounded-lg p-4 border border-gray-600">
             <div className="flex items-center gap-2 mb-2">
               <Image className="h-5 w-5 text-gray-400" />
@@ -328,6 +369,147 @@ const MonthlyAnalysis = () => {
             </div>
           </div>
         </div>
+
+
+{/* 時間分析を追加 */}
+{timeAnalysisData && timeAnalysisData.heatmap.some(d => d.count > 0) && (
+  <div className="bg-gray-700 p-4 rounded-lg mb-6">
+    <div className="flex items-center gap-2 mb-4">
+      <TrendingUp className="h-5 w-5 text-gray-400" />
+      <h3 className="text-gray-300">販売時間分析</h3>
+    </div>
+    
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* コンパクトなヒートマップ */}
+      <div className="bg-gray-800 p-4 rounded-lg">
+        <h4 className="text-sm text-gray-400 mb-3">曜日・時間帯ヒートマップ</h4>
+        <div className="relative overflow-x-auto">
+          <table className="w-full text-xs text-gray-400">
+            <thead>
+              <tr>
+                <th className="p-1"></th>
+                {Array.from({length: 24}, (_, i) => (
+                  <th key={i} className="p-1 text-center w-6">
+                    {i}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {(['日', '月', '火', '水', '木', '金', '土'] as const).map(day => {
+                const dayData = timeAnalysisData.heatmap.filter(
+                  (d: HeatmapData) => d.day === day
+                );
+                const maxCount = Math.max(
+                  ...timeAnalysisData.heatmap.map((d: HeatmapData) => d.count)
+                );
+                
+                return (
+                  <tr key={day} className="border-t border-gray-700">
+                    <td className="p-1 font-medium">{day}</td>
+                    {Array.from({length: 24}, (_, hour) => {
+                      const data = dayData.find((d: HeatmapData) => d.hour === hour);
+                      const count = data?.count || 0;
+                      const opacity = maxCount > 0 ? count / maxCount : 0;
+                      
+                      return (
+                        <td 
+                          key={hour} 
+                          className="w-6 h-6"
+                          style={{
+                            backgroundColor: `rgba(139, 92, 246, ${opacity})`,
+                            color: opacity > 0.5 ? 'white' : undefined
+                          }}
+                          title={`${day}曜${hour}時: ${count}件`}
+                        >
+                          <div className="flex items-center justify-center text-[10px]">
+                            {count > 0 ? count : ''}
+                          </div>
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {/* 分析サマリー */}
+      <div className="space-y-4">
+        {/* 曜日別統計 */}
+        <div className="bg-gray-800 p-4 rounded-lg">
+          <h4 className="text-sm text-gray-400 mb-3">曜日別取引状況</h4>
+          <div className="grid grid-cols-7 gap-2 text-center">
+            {(['日', '月', '火', '水', '木', '金', '土'] as const).map(day => (
+              <div key={day} className="flex flex-col">
+                <span className="text-gray-400 text-sm">{day}</span>
+                <span className="text-gray-100 font-medium">
+                  {timeAnalysisData.dayOfWeek[day]}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ピーク時間のサマリー */}
+        <div className="bg-gray-800 p-4 rounded-lg">
+          <h4 className="text-sm text-gray-400 mb-3">ピーク時間帯</h4>
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="text-gray-400">最も取引が多い時間帯</span>
+              <span className="text-gray-100 font-medium">
+                {timeAnalysisData.hourOfDay.indexOf(Math.max(...timeAnalysisData.hourOfDay))}時台
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-400">最も取引が多い曜日</span>
+              <span className="text-gray-100 font-medium">
+                {Object.entries(timeAnalysisData.dayOfWeek)
+                  .reduce((max, [day, count]) => 
+                    count > max[1] ? [day, count] : max, ['', 0])[0]}曜日
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* 時間帯の特徴 */}
+        <div className="bg-gray-800 p-4 rounded-lg">
+          <h4 className="text-sm text-gray-400 mb-3">時間帯の特徴</h4>
+          <div className="space-y-2">
+            {[
+              { range: '5-9時', label: '早朝' },
+              { range: '9-17時', label: '日中' },
+              { range: '17-22時', label: '夕方・夜' },
+              { range: '22-5時', label: '深夜' }
+            ].map(period => {
+              const startHour = parseInt(period.range.split('-')[0]);
+              const endHour = parseInt(period.range.split('-')[1]);
+              let count = 0;
+              
+              if (period.label === '深夜') {
+                // 22-24時と0-5時の合計を計算
+                count = timeAnalysisData.hourOfDay.slice(22, 24).reduce((sum, c) => sum + c, 0) +
+                        timeAnalysisData.hourOfDay.slice(0, 5).reduce((sum, c) => sum + c, 0);
+              } else {
+                count = timeAnalysisData.hourOfDay
+                  .slice(startHour, endHour)
+                  .reduce((sum, c) => sum + c, 0);
+              }
+              
+              return (
+                <div key={period.label} className="flex justify-between items-center">
+                  <span className="text-gray-400">{period.label}（{period.range}）</span>
+                  <span className="text-gray-100">{count}件</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
       </div>
     </div>
   );
