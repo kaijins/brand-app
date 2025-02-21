@@ -52,11 +52,6 @@ export async function deleteAllLogos() {
       request.onerror = () => reject(request.error);
     });
   }
-  
-  // 開発用の管理ツールとして、ブラウザのコンソールで以下のように使用可能
-  window.deleteAllLogos = deleteAllLogos;
-  window.deleteLogo = deleteLogo;
-  window.getAllLogos = getAllLogos;
 
 // ロゴの保存
 export async function saveLogo(logo: LogoData) {
