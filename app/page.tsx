@@ -2,7 +2,6 @@
 
 import React, { Suspense } from 'react';
 import dynamic from 'next/dynamic';
-import '../utils/bulkUpload';  // 追加
 
 const BrandSearch = dynamic(() => import('../components/BrandSearch'), {
   ssr: false,
