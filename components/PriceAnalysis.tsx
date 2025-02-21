@@ -345,7 +345,14 @@ const PriceAnalysis: React.FC<PriceAnalysisProps> = ({
                       </span>
                     </td>
                     <td className="py-2 text-right text-gray-400">
-                      {new Date(product.soldDate).toLocaleDateString()}
+                    {product.soldDate 
+                      ? new Date(product.soldDate).toLocaleDateString('ja-JP', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit'
+                        })
+                      : '-'
+                    }
                     </td>
                   </tr>
                 ))}
