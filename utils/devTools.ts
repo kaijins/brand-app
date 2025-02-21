@@ -1,11 +1,17 @@
 'use client';
 
-import { deleteAllLogos, deleteLogo, getAllLogos } from './logoDatabase';
+import { deleteAllLogos, deleteLogo, getAllLogos, LogoData } from './logoDatabase';
+
+declare global {
+  interface Window {
+    deleteAllLogos: typeof deleteAllLogos;
+    deleteLogo: typeof deleteLogo;
+    getAllLogos: typeof getAllLogos;
+  }
+}
 
 if (typeof window !== 'undefined') {
-  // グローバルオブジェクトに関数を直接割り当て
   window.deleteAllLogos = deleteAllLogos;
   window.deleteLogo = deleteLogo;
   window.getAllLogos = getAllLogos;
-  
 }
