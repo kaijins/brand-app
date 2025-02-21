@@ -169,9 +169,11 @@ const PriceAnalysis: React.FC<PriceAnalysisProps> = ({
    // ソート済み商品データ（新規追加）
    const sortedProducts = useMemo(() => {
     return [...speedPriceData]
-      .sort((a, b) => 
-        new Date(b.soldDate).getTime() - new Date(a.soldDate).getTime()
-      );
+  .sort((a, b) => {
+    const dateA = a.soldDate ? new Date(a.soldDate) : new Date(0);
+    const dateB = b.soldDate ? new Date(b.soldDate) : new Date(0);
+    return dateB.getTime() - dateA.getTime();
+  });
   }, [speedPriceData]);
 
   // 類似商品のグループを取得
