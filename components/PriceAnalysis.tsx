@@ -150,7 +150,7 @@ const PriceAnalysis: React.FC<PriceAnalysisProps> = ({
         .filter(data => data.soldDate)
         .map(data => ({
           price: data.price,
-          soldDate: new Date(data.soldDate)
+          soldDate: data.soldDate ? new Date(data.soldDate) : new Date()
         }))
     );
   }, [speedPriceData]);
